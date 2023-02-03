@@ -1,5 +1,6 @@
 import { ConfirmModal, ModalRoot, Patch, QuickAccessTab, Router, showModal, sleep } from 'decky-frontend-lib';
 import { FC, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaCog, FaExclamationCircle, FaPlug } from 'react-icons/fa';
 
 import { DeckyState, DeckyStateContextProvider, useDeckyState } from './components/DeckyState';
@@ -96,10 +97,11 @@ class PluginLoader extends Logger {
 
   public async notifyUpdates() {
     const versionInfo = await this.updateVersion();
+    const { t } = useTranslation();
     if (versionInfo?.remote && versionInfo?.remote?.tag_name != versionInfo?.current) {
       this.toaster.toast({
-        title: 'Decky',
-        body: `Update to ${versionInfo?.remote?.tag_name} available!`,
+        title: t('PluginLoader.decky_title'),
+        body: t('PluginLoader.decky_update_available', { tag_name: versionInfo?.remote?.tag_name }),
         onClick: () => Router.Navigate('/decky/settings'),
       });
       this.deckyState.setHasLoaderUpdate(true);
@@ -116,10 +118,11 @@ class PluginLoader extends Logger {
 
   public async notifyPluginUpdates() {
     const updates = await this.checkPluginUpdates();
+    const { t } = useTranslation();
     if (updates?.size > 0) {
       this.toaster.toast({
-        title: 'Decky',
-        body: `Updates available for ${updates.size} plugin${updates.size > 1 ? 's' : ''}!`,
+        title: t('PluginLoader.decky_title'),
+        body: t('PluginLoader.plugin_update', { count: updates.size }),
         onClick: () => Router.Navigate('/decky/settings/plugins'),
       });
     }
@@ -138,6 +141,7 @@ class PluginLoader extends Logger {
   }
 
   public uninstallPlugin(name: string) {
+    const { t } = useTranslation();
     showModal(
       <ConfirmModal
         onOK={async () => {
@@ -146,10 +150,10 @@ class PluginLoader extends Logger {
         onCancel={() => {
           // do nothing
         }}
-        strTitle={`Uninstall ${name}`}
-        strOKButtonText={'Uninstall'}
+        strTitle={t('PluginLoader.plugin_uninstall.title', { name: name })}
+        strOKButtonText={t('PluginLoader.plugin_uninstall.button')}
       >
-        Are you sure you want to uninstall {name}?
+        {t('PluginLoader.plugin_uninstall.desc', { name: name })}
       </ConfirmModal>,
     );
   }
@@ -226,6 +230,9 @@ class PluginLoader extends Logger {
         Authentication: window.deckyAuthToken,
       },
     });
+
+    const { t } = useTranslation();
+
     if (res.ok) {
       try {
         let plugin_export = await eval(await res.text());
@@ -236,17 +243,14 @@ class PluginLoader extends Logger {
           version: version,
         });
       } catch (e) {
-        this.error('Error loading plugin ' + name, e);
+        this.error(t('PluginLoader.plugin_load_error.message', { name: name }), e);
         const TheError: FC<{}> = () => (
           <>
-            Error:{' '}
+            {t('PluginLoader.error')}:{' '}
             <pre>
               <code>{e instanceof Error ? e.stack : JSON.stringify(e)}</code>
             </pre>
-            <>
-              Please go to <FaCog style={{ display: 'inline' }} /> in the Decky menu if you need to uninstall this
-              plugin.
-            </>
+            <>{t('PluginLoader.plugin_error_uninstall', { icon: <FaCog style={{ display: 'inline' }} /> })}</>
           </>
         );
         this.plugins.push({
@@ -255,7 +259,11 @@ class PluginLoader extends Logger {
           content: <TheError />,
           icon: <FaExclamationCircle />,
         });
-        this.toaster.toast({ title: 'Error loading ' + name, body: '' + e, icon: <FaExclamationCircle /> });
+        this.toaster.toast({
+          title: t('PluginLoader.plugin_load_error.toast', { name: name }),
+          body: '' + e,
+          icon: <FaExclamationCircle />,
+        });
       }
     } else throw new Error(`${name} frontend_bundle not OK`);
   }
@@ -288,12 +296,14 @@ class PluginLoader extends Logger {
     includeFiles?: boolean,
     regex?: RegExp,
   ): Promise<{ path: string; realpath: string }> {
+    const { t } = useTranslation();
+
     return new Promise((resolve, reject) => {
       const Content = ({ closeModal }: { closeModal?: () => void }) => (
         // Purposely outside of the FilePicker component as lazy-loaded ModalRoots don't focus correctly
         <ModalRoot
           onCancel={() => {
-            reject('User canceled');
+            reject(t('PluginLoader.file_picker_cancel_text'));
             closeModal?.();
           }}
         >

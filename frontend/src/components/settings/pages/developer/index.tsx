@@ -1,5 +1,6 @@
 import { DialogBody, Field, TextField, Toggle } from 'decky-frontend-lib';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaReact, FaSteamSymbol } from 'react-icons/fa';
 
 import { setShouldConnectToReactDevTools, setShowValveInternal } from '../../../../developer';
@@ -11,16 +12,17 @@ export default function DeveloperSettings() {
   const [reactDevtoolsEnabled, setReactDevtoolsEnabled] = useSetting<boolean>('developer.rdt.enabled', false);
   const [reactDevtoolsIP, setReactDevtoolsIP] = useSetting<string>('developer.rdt.ip', '');
   const textRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   return (
     <DialogBody>
       <RemoteDebuggingSettings />
       <Field
-        label="Enable Valve Internal"
+        label={t('DeveloperIndex.valve_internal.label')}
         description={
           <span style={{ whiteSpace: 'pre-line' }}>
-            Enables the Valve internal developer menu.{' '}
-            <span style={{ color: 'red' }}>Do not touch anything in this menu unless you know what it does.</span>
+            {t('DeveloperIndex.valve_internal.desc1')}{' '}
+            <span style={{ color: 'red' }}>{t('DeveloperIndex.valve_internal.desc2')}</span>
           </span>
         }
         icon={<FaSteamSymbol style={{ display: 'block' }} />}
@@ -34,13 +36,10 @@ export default function DeveloperSettings() {
         />
       </Field>
       <Field
-        label="Enable React DevTools"
+        label={t('DeveloperIndex.react_devtools.label')}
         description={
           <>
-            <span style={{ whiteSpace: 'pre-line' }}>
-              Enables connection to a computer running React DevTools. Changing this setting will reload Steam. Set the
-              IP address before enabling.
-            </span>
+            <span style={{ whiteSpace: 'pre-line' }}>{t('DeveloperIndex.react_devtools.desc')}</span>
             <br />
             <br />
             <div ref={textRef}>

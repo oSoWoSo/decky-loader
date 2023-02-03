@@ -1,5 +1,6 @@
 import { Dropdown, Field, TextField } from 'decky-frontend-lib';
 import { FunctionComponent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaShapes } from 'react-icons/fa';
 
 import Logger from '../../../../logger';
@@ -11,12 +12,13 @@ const logger = new Logger('StoreSelect');
 const StoreSelect: FunctionComponent<{}> = () => {
   const [selectedStore, setSelectedStore] = useSetting<Store>('store', Store.Default);
   const [selectedStoreURL, setSelectedStoreURL] = useSetting<string | null>('store-url', null);
+  const { t } = useTranslation();
 
   // Returns numerical values from 0 to 2 (with current branch setup as of 8/28/22)
   // 0 being Default, 1 being Testing and 2 being Custom
   return (
     <>
-      <Field label="Plugin Store Channel" childrenContainerWidth={'fixed'}>
+      <Field label={t('StoreSelect.store_channel_label')} childrenContainerWidth={'fixed'}>
         <Dropdown
           rgOptions={Object.values(Store)
             .filter((store) => typeof store == 'string')
@@ -33,7 +35,7 @@ const StoreSelect: FunctionComponent<{}> = () => {
       </Field>
       {selectedStore == Store.Custom && (
         <Field
-          label="Custom Store"
+          label={t('StoreSelect.custom_store_label')}
           indentLevel={1}
           description={
             <TextField

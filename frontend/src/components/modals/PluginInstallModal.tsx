@@ -1,5 +1,6 @@
 import { ConfirmModal, Navigation, QuickAccessTab } from 'decky-frontend-lib';
 import { FC, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PluginInstallModalProps {
   artifact: string;
@@ -13,6 +14,7 @@ interface PluginInstallModalProps {
 
 const PluginInstallModal: FC<PluginInstallModalProps> = ({ artifact, version, hash, onOK, onCancel, closeModal }) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const { t } = useTranslation();
   return (
     <ConfirmModal
       bOKDisabled={loading}
@@ -26,13 +28,15 @@ const PluginInstallModal: FC<PluginInstallModalProps> = ({ artifact, version, ha
       onCancel={async () => {
         await onCancel();
       }}
-      strTitle={`Install ${artifact}`}
-      strOKButtonText={loading ? 'Installing' : 'Install'}
+      strTitle={t('PluginInstallModal.install.title', { artifact: artifact })}
+      strOKButtonText={
+        loading ? t('PluginInstallModal.install.button_processing') : t('PluginInstallModal.install.button_idle')
+      }
     >
       {hash == 'False' ? (
         <h3 style={{ color: 'red' }}>!!!!NO HASH PROVIDED!!!!</h3>
       ) : (
-        `Are you sure you want to install ${artifact} ${version}?`
+        t('PluginInstallModal.install.desc', { artifact: artifact, version: version })
       )}
     </ConfirmModal>
   );

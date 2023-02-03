@@ -8,6 +8,7 @@ import {
   Toggle,
 } from 'decky-frontend-lib';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { installFromURL } from '../../../../store';
 import { useDeckyState } from '../../../DeckyState';
@@ -24,21 +25,22 @@ export default function GeneralSettings({
 }) {
   const [pluginURL, setPluginURL] = useState('');
   const { versionInfo } = useDeckyState();
+  const { t } = useTranslation();
 
   return (
     <DialogBody>
       <DialogControlsSection>
-        <DialogControlsSectionHeader>Updates</DialogControlsSectionHeader>
+        <DialogControlsSectionHeader>{t('SettingsGeneralIndex.updates.header')}</DialogControlsSectionHeader>
         <UpdaterSettings />
       </DialogControlsSection>
       <DialogControlsSection>
-        <DialogControlsSectionHeader>Beta Participation</DialogControlsSectionHeader>
+        <DialogControlsSectionHeader>{t('SettingsGeneralIndex.beta.header')}</DialogControlsSectionHeader>
         <BranchSelect />
         <StoreSelect />
       </DialogControlsSection>
       <DialogControlsSection>
         <DialogControlsSectionHeader>Other</DialogControlsSectionHeader>
-        <Field label="Enable Developer Mode">
+        <Field label={t('SettingsGeneralIndex.developer_mode.label')}>
           <Toggle
             value={isDeveloper}
             onChange={(toggleValue) => {
@@ -47,17 +49,17 @@ export default function GeneralSettings({
           />
         </Field>
         <Field
-          label="Install plugin from URL"
+          label={t('SettingsGeneralIndex.manual_plugin.label')}
           description={<TextField label={'URL'} value={pluginURL} onChange={(e) => setPluginURL(e?.target.value)} />}
         >
           <DialogButton disabled={pluginURL.length == 0} onClick={() => installFromURL(pluginURL)}>
-            Install
+            {t('SettingsGeneralIndex.manual_plugin.button')}
           </DialogButton>
         </Field>
       </DialogControlsSection>
       <DialogControlsSection>
-        <DialogControlsSectionHeader>About</DialogControlsSectionHeader>
-        <Field label="Decky Version" focusable={true}>
+        <DialogControlsSectionHeader>{t('SettingsGeneralIndex.about.header')}</DialogControlsSectionHeader>
+        <Field label={t('SettingsGeneralIndex.about.decky_version')} focusable={true}>
           <div style={{ color: 'var(--gpSystemLighterGrey)' }}>{versionInfo?.current}</div>
         </Field>
       </DialogControlsSection>
